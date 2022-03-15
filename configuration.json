@@ -1,0 +1,18 @@
+{
+  "config": [
+    {
+      "url": "http://test.com",
+      "time": 5,
+      "cssSelector": ".test",
+      "price": null,
+      "exists": false
+    },
+    {
+      "url": "http://test.com",
+      "time": 5,
+      "cssSelector": ".test",
+      "price": null,
+      "exists": false
+    }
+  ]
+}
