@@ -1,15 +1,17 @@
 {
   "config": [
     {
+      "name": "test1",
       "url": "http://test.com",
-      "time": 5,
+      "time": 1,
       "cssSelector": ".test",
       "price": null,
       "exists": false
     },
     {
+      "name": "test2",
       "url": "http://test.com",
-      "time": 5,
+      "time": 1,
       "cssSelector": ".test",
       "price": null,
       "exists": false
