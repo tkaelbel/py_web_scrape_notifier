@@ -2,17 +2,10 @@
   "config": [
     {
       "name": "test1",
-      "url": "http://test.com",
+      "url": "https://www.amazon.de/Apple-MacBook-Pro-Chip-10%E2%80%91Core-CPU-16%E2%80%91Core-GPU/dp/B09JR5JTP3/ref=sr_1_4?__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=1YGMU48EM7ZX&keywords=macbook+pro&qid=1648566675&sprefix=macbook+pro%2Caps%2C77&sr=8-4",
       "time": 1,
-      "cssSelector": ".test",
-      "price": null,
-      "exists": false
-    },
-    {
-      "name": "test2",
-      "url": "http://test.com",
-      "time": 1,
-      "cssSelector": ".test",
+      "cssSelector": "a-price-whole",
+      "condition": ">= 25",
       "price": null,
       "exists": false
     }
