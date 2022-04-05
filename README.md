@@ -22,9 +22,9 @@ The application also uses env variables for the password of the email and also t
 
 * `password` -> the password for the sender_email
 
-* sender_email -> the name of the email you want to sent from
+* `sender_email` -> the name of the email you want to sent from
 
-* receiver_email -> the name of the email you want to sent to
+* `receiver_email` -> the name of the email you want to sent to
 
 ## Setup
 
