@@ -1,16 +1,20 @@
-import os, json, schedule, threading, time, logging
+import locale
+import  json, schedule, threading, time, logging
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from envelopes import Envelope
+from decouple import config
 
 # Configure logging
 logger = logging.getLogger(__name__)
-fileLogger = logging.FileHandler(filename='trace.log', filemode='w', level=logging.INFO)
+fileLogger = logging.FileHandler(filename='trace.log', mode='w')
+fileLogger.setLevel(logging.INFO)
+logger.setLevel(logging.INFO)
 logger.addHandler(fileLogger)
-logging.info("--- Hello from py_web_scrape_notifier ---")
+logger.info("--- Hello from py_web_scrape_notifier ---")
 
 # Selenium Chrome related variables
 service = Service(executable_path=ChromeDriverManager().install())
@@ -18,11 +22,11 @@ op = webdriver.ChromeOptions()
 op.add_argument('headless')
 
 
-# Here we are getting the env variables from the os to set the email and password
+# Here we are getting the env variables from the .env file to set the email and password
 # If you don't want to use env variables just put your email and password here as string
-password = os.environ.get('EMAIL_PASSWORD')
-sender_email = os.environ.get('SENDER_EMAIL')
-receiver_email = os.environ.get('RECEIVER_EMAIL')
+password = config('email_password')
+sender_email = config('sender_email')
+receiver_email = config('receiver_email')
 smtp_server = 'smtp.gmail.com'
 
 
@@ -123,8 +127,7 @@ def evaluate_condition(element, condition):
     if('True' in condition or 'False' in condition):
         value = bool(element)
     else:
-        ## TODO: here we need to find a different locale related solution
-        value = float(element.text.replace('.', ''))
+        value = locale.atof(element.text)
     
     condition_to_evaluate = f'{(value)} {condition}'
     return eval(condition_to_evaluate)
