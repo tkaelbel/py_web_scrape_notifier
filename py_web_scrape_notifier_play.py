@@ -1,5 +1,6 @@
 import locale
 import json, schedule, threading, time, logging, os, pickle
+import re
 
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -151,7 +152,10 @@ def evaluate_condition(element, condition):
     if('True' in condition or 'False' in condition):
         value = bool(element)
     else:
-        value = locale.atof(element.text_content().replace(',', '').replace('.', ''))
+        temp = re.findall(r'\d+', element.text_content())
+        if not temp:
+            raise Exception('Could not regex numbers out of given html element')
+        value = locale.atof(temp[0].replace(',', '').replace('.', ''))
     
     condition_to_evaluate = f'{(value)} {condition}'
     return eval(condition_to_evaluate)
