@@ -1,12 +1,5 @@
 import locale
-import json, schedule, threading, time, logging, os, pickle, platform
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-
-from selenium.common.exceptions import NoSuchElementException
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+import json, schedule, threading, time, logging, os, pickle
 
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -16,6 +9,8 @@ from base64 import urlsafe_b64encode
 
 from decouple import config
 
+from playwright.sync_api import sync_playwright
+
 # Configure logging
 logger = logging.getLogger(__name__)
 fileLogger = logging.FileHandler(filename='trace.log', mode='w')
@@ -24,19 +19,6 @@ logger.setLevel(logging.INFO)
 logger.addHandler(fileLogger)
 logger.info("--- Hello from py_web_scrape_notifier ---")
 
-op = Options()
-op.headless = True
-
-# Selenium Chrome related variables
-if platform.system() == "Linux" and platform.machine() == "armv7l":
-    print('rapsberry')  
-    # if raspi
-    op.BinaryLocation = ("/usr/bin/chromium-browser")
-    service = Service("/usr/bin/chromedriver")
-else:
-    service = Service(executable_path=ChromeDriverManager().install())
-
-# service = Service(executable_path=GeckoDriverManager().install())
 
 # Here we are getting the env variables from the .env file to set the email
 # If you don't want to use env variables just put your email here as string
@@ -133,35 +115,35 @@ def run_threaded(job_func, config):
 # Tries to evaluate the given condition
 # Calls, the send_notification, if the condition is true
 def job(config):
-    logger.info('--- Processing for configuration %s ---', config['name'])
-        
-    try:
-        driver = create_driver()
-        driver.get(config['url'])
-        time.sleep(5)
-        logger.info('--- Accessing given URL by Selenium ---')
+    with sync_playwright() as p:
+        logger.info('--- Processing for configuration %s ---', config['name'])
 
-        element = driver.find_element(By.CSS_SELECTOR, value=config['cssSelector'])
-        logger.info('--- Found given css selector element ---')
+        try:
+            browser = p.chromium.launch(
+                headless=True
+            )
+            page = browser.new_page()
 
-        logger.info('--- Trying to evaluate condition %s ---', config['condition'])
-        condition = config['condition']
-        evaluated_condition = evaluate_condition(element, condition)
-        logger.info('--- Successfully evaluated condition ---')
+            logger.info('--- Accessing given URL by Selenium ---')
+            page.goto(config['url'])
+            page.wait_for_timeout(5000)
 
-        if(evaluated_condition):
-            send_notification(config)
+            element = page.query_selector(config['cssSelector'])
+            logger.info('--- Found given css selector element ---')
 
-    except NoSuchElementException as err:
-        logger.error('--- Could not find element because of %s ---', err)
-    except Exception as err1:
-        logger.error('--- Could not evaluate conidition because of %s ---', err1)
+            logger.info('--- Trying to evaluate condition %s ---', config['condition'])
+            condition = config['condition']
+            evaluated_condition = evaluate_condition(element, condition)
+            logger.info('--- Successfully evaluated condition ---')
 
-    if(driver is not None):
-        driver.close()
+            if(evaluated_condition):
+                send_notification(config)
 
-def create_driver():
-    return webdriver.Chrome(service=service, options=op)
+            browser.close()
+
+        except Exception as err1:
+            logger.error('--- Could not evaluate conidition because of %s ---', err1)
+
 
 # Evaluates the found element from the website with the configuration condition
 def evaluate_condition(element, condition):
@@ -169,7 +151,7 @@ def evaluate_condition(element, condition):
     if('True' in condition or 'False' in condition):
         value = bool(element)
     else:
-        value = locale.atof(element.text)
+        value = locale.atof(element.text_content().replace(',', '').replace('.', ''))
     
     condition_to_evaluate = f'{(value)} {condition}'
     return eval(condition_to_evaluate)

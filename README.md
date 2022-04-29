@@ -1,26 +1,20 @@
 # py_web_scrape_notifier
 
-A python script that notifies a user via email about specific changes to a website. I use it with my rasbperry pi to get notified about prices changes for specific products.
+A python script that notifies a user via email (only gmail) about specific changes to a website. (This requires a the gmail API). Have a closer look here: https://developers.google.com/gmail/api/quickstart/python. I use it with my rasbperry pi to get notified about prices changes for specific products.
 
 The script uses
 
 * schedule -> for time specfic scheduling (also each schedule in own thread)
 
-* selenium -> for accessing the web page in headless browser mode with Chrome
+* selenium or playwright -> for accessing the web page in headless browser mode with Chrome
 
 * envelopes -> for sending the email (tried it also with the given smtp libs, but my email provider didn't like the format of the email)
 
 ## Limitations
 
-Currently it is only possible to use a google email account, but it should be very easy to change the implementation to use other email accounts if it is necessary. 
+Works only with a gmail account and with the gmail API. 
 
-Just change the variable `smtp_server` to the needed one and that 's probably it.
-
-
-
-The application also uses env variables for the password of the email and also the sender email and the receiver email. If you don't want to use that you can also just write the values hardcoded to the py file. The variables are the following
-
-* `password` -> the password for the sender_email
+The application also uses env variables for the email and also the sender email and the receiver email. If you don't want to use that you can also just write the values hardcoded to the py file. The variables are the following
 
 * sender_email -> the name of the email you want to sent from
 
@@ -47,18 +41,17 @@ The application also uses env variables for the password of the email and also t
 5. Adjust the .env file to your needs
    
    ```properties
-   email_password = <password>
    receiver_email = <some_email@some.com>
    sender_email = <some_email@gmail.com>
    ```
 
-6. Start the application with 
-   
-   ```bash
-   py py_web_srape_notifier.py
-   ```
+6. Set up your gmail API project. https://developers.google.com/gmail/api/quickstart/python
 
+7. Start the application with 
 
+```bash
+py py_web_srape_notifier.py or py_web_srape_notifier_play.py
+```
 
 ## Usage
 
