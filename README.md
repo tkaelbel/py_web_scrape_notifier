@@ -16,9 +16,9 @@ Works only with a gmail account and with the gmail API.
 
 The application also uses env variables for the email and also the sender email and the receiver email. If you don't want to use that you can also just write the values hardcoded to the py file. The variables are the following
 
-* sender_email -> the name of the email you want to sent from
+* `sender_email` -> the name of the email you want to sent from
 
-* receiver_email -> the name of the email you want to sent to
+* `receiver_email` -> the name of the email you want to sent to
 
 ## Setup
 
