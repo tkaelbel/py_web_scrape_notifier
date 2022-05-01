@@ -8,7 +8,7 @@ The script uses
 
 * selenium or playwright -> for accessing the web page in headless browser mode with Chrome
 
-* envelopes -> for sending the email (tried it also with the given smtp libs, but my email provider didn't like the format of the email)
+* googleapi -> for sending the email
 
 ## Limitations
 
