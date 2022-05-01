@@ -13,11 +13,16 @@ from decouple import config
 from playwright.sync_api import sync_playwright
 
 # Configure logging
+logFormatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s')
+
 logger = logging.getLogger(__name__)
+
 fileLogger = logging.FileHandler(filename='trace.log', mode='w')
-fileLogger.setLevel(logging.INFO)
+fileLogger.setFormatter(logFormatter)
+
 logger.setLevel(logging.INFO)
 logger.addHandler(fileLogger)
+
 logger.info("--- Hello from py_web_scrape_notifier ---")
 
 
@@ -98,12 +103,12 @@ def create_threaded_scheduler(config):
         return
 
     lDefaultTime = 5
-    if(hasattr(config, 'time')):
+    if(config['time']):
         lDefaultTime = config['time']
 
     # creating threaded scheduled task
     logger.info("--- Created scheduled thread for %s in %d minutes ---", config['name'], lDefaultTime)
-    schedule.every(lDefaultTime).seconds.do(run_threaded, job, config)
+    schedule.every(lDefaultTime).minutes.do(run_threaded, job, config)
         
 # Runs the threaded scheduled job
 def run_threaded(job_func, config):
@@ -125,9 +130,10 @@ def job(config):
             )
             page = browser.new_page()
 
-            logger.info('--- Accessing given URL by Selenium ---')
+            logger.info('--- Accessing given URL by Playwright ---')
             page.goto(config['url'])
             page.wait_for_timeout(5000)
+            page.reload()
 
             element = page.query_selector(config['cssSelector'])
             logger.info('--- Found given css selector element ---')
